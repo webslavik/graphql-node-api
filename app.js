@@ -1,12 +1,37 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+const express = require('express');
+const bodyParser = require('body-parser');
+const graphqlHTTP = require('express-graphql');
+const { buildSchema } = require('graphql');
 
-const app = express()
+const app = express();
 
 app.use(bodyParser.json());
 
-app.get('/', (request, response, next) => {
-    response.send('Hello boy')
-})
+app.use('/api', graphqlHTTP({
+    schema: buildSchema(`
+        type RootQuery {
+            events: [String!]!
+        }
 
-app.listen(3000)
+        type RootMutation {
+            createEvent(name: String): String
+        }
+
+        schema {
+            query: RootQuery
+            mutation: RootMutation
+        }
+    `),
+    rootValue: {
+        events() {
+            return ['Bob', 'Jack', 'Eddy']
+        },
+        createEvent(args) {
+            const eventName = args.name;
+            return eventName;
+        }
+    },
+    graphiql: true
+}))
+
+app.listen(3000);
