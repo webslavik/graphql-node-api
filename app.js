@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const graphqlHTTP = require('express-graphql');
 const { buildSchema } = require('graphql');
 
@@ -60,4 +61,12 @@ app.use('/api', graphqlHTTP({
     graphiql: true
 }))
 
-app.listen(3000);
+mongoose
+    .connect('mongodb://localhost:27017/graphqlAPI', { useNewUrlParser: true })
+    .then(() => {
+        console.log('Connection to DB is successful.')
+        app.listen(3000);
+    })
+    .catch((error) => {
+        console.log(`Can't connect to DB: ${error}`)
+    })
