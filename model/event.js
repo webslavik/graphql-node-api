@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 
+
 const eventSchema = new Schema({
     title: {
         type: String,
@@ -16,7 +17,11 @@ const eventSchema = new Schema({
     date: {
         type: Date,
         required: true,
+    },
+    creator: {
+        type: Schema.Types.ObjectId,
+        ref: 'Users',
     }
 });
 
-module.exports = model('events', eventSchema);
+module.exports = model('Events', eventSchema);
