@@ -13,6 +13,45 @@ const User = require('./model/user');
 
 app.use(bodyParser.json());
 
+// Helpers
+const findEventCreator = async (userId) => {
+    try {
+        const { _doc: user } = await User.findById(userId); 
+
+        return {
+            ...user,
+            _id: user._id.toString(),
+            events: findEvents.bind(this, user.events),
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+const findEvents = async (eventsIdArray) => {
+    try {
+        const docs = await Event.find({ 
+            _id: {
+                $in: eventsIdArray,
+            } 
+        });
+
+        const events = docs.map(doc => {
+            const { _doc: event } = doc;
+
+            return {
+                ...event,
+                _id: event._id.toString(),
+                creator: findEventCreator.bind(this, event.creator),
+            }
+        });
+
+        return events;
+    } catch (error) {
+        throw error;
+    }
+}
+
 app.use('/api', graphqlHTTP({
     schema: buildSchema(`
         type Event {
@@ -21,12 +60,14 @@ app.use('/api', graphqlHTTP({
             description: String!
             price: Float!
             date: String!
+            creator: User!
         }
 
         type User {
             _id: ID!
             email: String!
             password: String
+            events: [Event!]
         }
 
 
@@ -61,13 +102,13 @@ app.use('/api', graphqlHTTP({
             try {
                 const docs = await Event.find();
 
-                const events = docs.map(event => {
+                const events = docs.map(doc => {
+                    const { _doc: user } = doc;
+
                     return {
-                        _id: event._id.toString(),
-                        title: event.title,
-                        description: event.description,
-                        price: event.price,
-                        date: event.date,
+                        ...user,
+                        _id: user._id.toString(),
+                        creator: findEventCreator.bind(this, user.creator),
                     }
                 })
 
@@ -78,7 +119,7 @@ app.use('/api', graphqlHTTP({
         },
         async createEvent(data) {
             try {
-                const event = await Event.create({
+                const { _doc: event } = await Event.create({
                     title: data.eventInput.title,
                     description: data.eventInput.description,
                     price: +data.eventInput.price,
@@ -88,13 +129,14 @@ app.use('/api', graphqlHTTP({
 
                 await User.findByIdAndUpdate('5c27a1aa03ffb50a5726941e', {
                     $push: {
-                        events: event
+                        events: event,
                     }
-                })
+                });
 
                 return {
-                    ...event._doc,
-                    _id: event._doc._id.toString(),
+                    ...event,
+                    _id: event._id.toString(),
+                    creator: findEventCreator.bind(this, event.creator),
                 }
             } catch (error) {
                 throw error;
