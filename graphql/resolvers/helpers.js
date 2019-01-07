@@ -49,8 +49,6 @@ const singleEvent = async (eventId) => {
 }
 
 
-const defaultUser = '5c27a1aa03ffb50a5726941e';
-
 const transformEvent = event => {
     return {
         ...event,
@@ -74,7 +72,4 @@ const transformBooking = booking => {
 module.exports = {
     transformEvent,
     transformBooking,
-
-    // for test
-    defaultUser,
 };

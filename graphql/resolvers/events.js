@@ -1,7 +1,7 @@
 const Event = require('./../../model/event');
 const User = require('./../../model/user');
 
-const { transformEvent, defaultUser } = require('./helpers');
+const { transformEvent } = require('./helpers');
 
 
 module.exports = {
@@ -20,17 +20,23 @@ module.exports = {
             throw error;
         }
     },
-    async createEvent(data) {
+    async createEvent(data, request) {
+        if (!request.isAuth) {
+            throw new Error('Unauthenticated');
+        }
+
+        const userId = request.userId;
+
         try {
             const { _doc: event } = await Event.create({
                 title: data.eventInput.title,
                 description: data.eventInput.description,
                 price: +data.eventInput.price,
                 date: data.eventInput.date,
-                creator: defaultUser,
+                creator: userId,
             });
 
-            await User.findByIdAndUpdate(defaultUser, {
+            await User.findByIdAndUpdate(userId, {
                 $push: {
                     events: event,
                 }
