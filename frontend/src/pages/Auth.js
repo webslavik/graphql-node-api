@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 
+import AuthContext from './../context/auth-context';
+
 
 class AuthPage extends Component {
     state = {
         isLogin: true,
     }
+
+    static contextType = AuthContext;
 
     constructor(props) {
         super(props);
@@ -57,7 +61,6 @@ class AuthPage extends Component {
             };
         }
 
-
         fetch('http://localhost:3001/api', {
             method: 'POST',
             body: JSON.stringify(requestBody),
@@ -73,8 +76,15 @@ class AuthPage extends Component {
 
             return response.json();
         })
-        .then(response => {
-            console.log(response);
+        .then(respData => {
+            console.log(respData);
+            if (respData.data.login.token) {
+                this.context.login(
+                    respData.data.login.token,
+                    respData.data.login.userId,
+                    respData.data.login.tokenExpiration
+                  );
+            }
         })
         .catch(error => console.log(error));
             
