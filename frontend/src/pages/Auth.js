@@ -101,11 +101,11 @@ class AuthPage extends Component {
                         <form onSubmit={this.submitHandler}>
                             <div className="form-group">
                                 <label htmlFor="email">Email address:</label>
-                                <input type="text" className="form-control" id="email" ref={this.emailEl} />
+                                <input type="text" className="form-control" id="email" ref={this.emailEl} defaultValue='slavik.sukhanov@gmail.com' />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="pwd">Password:</label>
-                                <input type="password" className="form-control" id="pwd" ref={this.passwordEl} />
+                                <input type="password" className="form-control" id="pwd" ref={this.passwordEl} defaultValue='123456' />
                             </div>
                             <button type="submit" className="btn btn-primary mr-3">Submit</button>
                             <button type="button" className="btn" onClick={this.switchModeHandler}>

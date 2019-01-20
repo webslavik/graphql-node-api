@@ -8,7 +8,7 @@ const mainNavigation = props => (
     <AuthContext.Consumer>
         {context => {
             return (
-                <nav className="navbar navbar-expand-sm bg-light fixed-top">
+                <nav className="navbar navbar-expand-sm bg-light fixed-top justify-content-between">
                     <NavLink to='/' className="navbar-brand">Logo</NavLink>
                     <ul className='navbar-nav'>
                         {!context.token && (
@@ -24,6 +24,13 @@ const mainNavigation = props => (
                         <li>
                             <NavLink to='events' className="nav-link">Events</NavLink>
                         </li>
+
+                        {/* Log out */}
+                        {context.token && (
+                            <li className='ml-3'>
+                                <button className="btn btn-primary" onClick={context.logout}>Log out</button>
+                            </li>
+                        )}
                     </ul>
                 </nav>
 
