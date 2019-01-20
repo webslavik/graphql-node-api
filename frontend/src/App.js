@@ -34,23 +34,26 @@ class App extends Component {
 				login: this.login,
 				logout: this.logout,
 			}}>
+				{/* Navigation */}
 				<MainNavigation />
-				<main>
-				<Switch>
-					{this.state.token && <Redirect from='/' to='/events' exact />}
-					{this.state.token && <Redirect from='/auth' to='/events' exact />}					
-					
-					{!this.state.token && (
-						<Route path='/auth' component={AuthPage} />
-					)}
-					<Route path='/events' component={EventsPage} />
 
-					{this.state.token && (
-						<Route path='/bookings' component={BookingsPage} />
-					)}
+				{/* Content */}
+				<main className='container'>
+					<Switch>
+						{this.state.token && <Redirect from='/' to='/events' exact />}
+						{this.state.token && <Redirect from='/auth' to='/events' exact />}					
+						
+						{!this.state.token && (
+							<Route path='/auth' component={AuthPage} />
+						)}
+						<Route path='/events' component={EventsPage} />
 
-					{!this.state.token && <Redirect to='/auth' exact />}
-				</Switch>
+						{this.state.token && (
+							<Route path='/bookings' component={BookingsPage} />
+						)}
+
+						{!this.state.token && <Redirect to='/auth' exact />}
+					</Switch>
 				</main>
 			</AuthContext.Provider>
 			</React.Fragment>

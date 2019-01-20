@@ -1,0 +1,25 @@
+.custom-modal {
+    display: flex;
+    z-index: 1100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.custom-modal-backdrop {
+    background-color: black;
+    opacity: 0.4;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1100;
+}
+
+.custom-modal-content {
+    max-width: 480px;
+    width: 100%;
+    z-index: 1101;
+    border: none;
+}
