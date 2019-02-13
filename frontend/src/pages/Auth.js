@@ -55,6 +55,7 @@ class AuthPage extends Component {
                         createUser(userInput: {email: "${email}", password: "${password}"}) {
                             _id
                             email
+                            password
                         }
                     }
                 `
@@ -77,16 +78,23 @@ class AuthPage extends Component {
             return response.json();
         })
         .then(respData => {
-            console.log(respData);
-            if (respData.data.login.token) {
+            if (respData.data.login) {
+                console.log('Sign in:', respData);
+                
                 this.context.login(
                     respData.data.login.token,
                     respData.data.login.userId,
                     respData.data.login.tokenExpiration
                   );
+
+                return;
             }
+
+            console.log('Sign up:', respData);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.log(`[ERROR] Auth failed!`);
+        });
             
     }
 

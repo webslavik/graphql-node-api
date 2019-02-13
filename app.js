@@ -32,8 +32,8 @@ app.use((request, response, next) => {
 app.use('/api', graphqlHTTP({
     schema: graphQlSchema,
     rootValue: graphQlResolvers,
-    graphiql: true
-}))
+    graphiql: true,
+}));
 
 mongoose
     .connect('mongodb://localhost:27017/graphqlAPI', { useNewUrlParser: true })
@@ -43,4 +43,4 @@ mongoose
     })
     .catch((error) => {
         console.log(`Can't connect to DB: ${error}`)
-    })
+    });

@@ -13,22 +13,25 @@ module.exports = {
             const foundUser = await User.findOne({ email });
 
             if (foundUser) {
+                console.log('[ERROR] Invalid credentials');
                 throw new Error('Invalid credentials');
             }
 
             const hashPassword = bcrypt.hashSync(password);
 
-            const user = await User.create({
+            const { _doc: user }  = await User.create({
                 email,
                 password: hashPassword,
             });
-            
+
             return {
-                ...user._doc,
+                ...user,
+                _id: user._id.toString(),
                 password: null,
             }
         } catch (err) {
-            throw error;
+            console.log(`[ERROR] Can't create user!`);
+            throw new Error(`[ERROR] Can't create user!`);
         }
     },
 

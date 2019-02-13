@@ -14,10 +14,11 @@ class App extends Component {
 	state = {
 		token: null,
 		userId: null,
+		tokenExpiration: null,
 	}
 
 	login = (token, userId, tokenExpiration) => {
-		this.setState({ token, userId });
+		this.setState({ token, userId, tokenExpiration });
 	}
 
 	logout = () => {
