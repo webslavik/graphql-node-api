@@ -7,6 +7,7 @@ import AuthContext from './../context/auth-context';
 class EventsPage extends Component {
     state = {
         creating: false,
+        events: [],
     }
 
     static contextType = AuthContext;
@@ -20,7 +21,7 @@ class EventsPage extends Component {
     }
 
     componentDidMount() {
-        // this.fetchEvets();
+        this.fetchEvets();
     }
 
     startCreatingEventHandler = () => {
@@ -84,7 +85,7 @@ class EventsPage extends Component {
             return response.json();
         })
         .then(data => {
-            console.log(data);
+            this.fetchEvets();
         })
         .catch(error => {
             console.log(`[ERROR] Create event failed!`);
@@ -102,6 +103,13 @@ class EventsPage extends Component {
                     events {
                         _id
                         title
+                        description
+                        price
+                        date
+                        creator {
+                            _id
+                            email
+                        }
                     }
                 }
             `
@@ -110,7 +118,6 @@ class EventsPage extends Component {
         fetch('http://localhost:3001/api', {
             method: 'POST',
             body: JSON.stringify(requestBody),
-            mode:'no-cors',
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -123,16 +130,28 @@ class EventsPage extends Component {
 
             return response.json();
         })
-        .then(data => {
-            console.log(data);
+        .then(resData => {
+            const events = resData.data.events;
+            this.setState({ events });
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+            console.log(`[ERROR] Fetch events failed!`);
+        });
     }
 
     render() {
+        const eventsList = this.state.events.map(event => {
+            return (
+                <li key={event._id} className='list-group-item'>
+                    {event.title}
+                </li>
+            );
+        });
+
         return (
             <React.Fragment>
                 <div className='event-page pt-5'>
+                    <h1>{this.fuck}</h1>
                     {this.state.creating && (
                         <Modal
                             title='Create event'
@@ -144,11 +163,11 @@ class EventsPage extends Component {
                             <form>
                                 <div className="form-group">
                                     <label htmlFor="usr">Title:</label>
-                                    <input type="text" className="form-control" id="title" ref={this.titleElRef} defaultValue='For test' />
+                                    <input type="text" className="form-control" id="title" ref={this.titleElRef} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Price:</label>
-                                    <input type="number" className="form-control" id="price" ref={this.priceElRef} defaultValue='9.99' />
+                                    <input type="number" className="form-control" id="price" ref={this.priceElRef} />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Date:</label>
@@ -156,7 +175,7 @@ class EventsPage extends Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Description:</label>
-                                    <textarea className="form-control" rows="5" id="description" ref={this.descriptionElRef} defaultValue='Cool story'></textarea>
+                                    <textarea className="form-control" rows="5" id="description" ref={this.descriptionElRef} ></textarea>
                                 </div>
                             </form>
                         </Modal>
@@ -171,7 +190,7 @@ class EventsPage extends Component {
 
                     <h2>Events list</h2>
                     <ul className="list-group">
-                        <li className='list-group-item'>test</li>
+                        {eventsList}
                     </ul>
                 </div>
             </React.Fragment>
