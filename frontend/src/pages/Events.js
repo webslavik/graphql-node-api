@@ -19,6 +19,10 @@ class EventsPage extends Component {
         this.descriptionElRef = React.createRef();
     }
 
+    componentDidMount() {
+        // this.fetchEvets();
+    }
+
     startCreatingEventHandler = () => {
         this.setState({ creating: true });
     }
@@ -30,7 +34,7 @@ class EventsPage extends Component {
             title: this.titleElRef.current.value,
             price: +this.priceElRef.current.value,
             date: this.dateElRef.current.value,
-            description: this.dateElRef.current.value,
+            description: this.descriptionElRef.current.value,
         }
 
         // TODO: simple validation
@@ -38,7 +42,7 @@ class EventsPage extends Component {
             event.price <= 0 ||
             event.date.trim().length === 0 ||
             event.description.trim().length === 0) {
-            console.log('validation failed')
+            console.log('validation failed', event)
             return;
         }
 
@@ -47,13 +51,16 @@ class EventsPage extends Component {
         const requestBody = {
             query: `
                 mutation {
-                    createEvent(eventInput: {title: "${event.title}", price: "${event.price}", date: ${event.date}", description: ${event.description}) {
-                        _id
-                        title
-                        description
-                        price
-                        date
-                        creator
+                    createEvent(eventInput: {
+                        title: "${event.title}", 
+                        description: "${event.description}", 
+                        price: "${event.price}", 
+                        date: "${event.date}"}) {
+                            _id
+                            title
+                            description
+                            price
+                            date
                     }
                 }
             `
@@ -68,15 +75,55 @@ class EventsPage extends Component {
             }
         })
         .then(response => {
+            if (response.status !== 200 &&
+                response.status !== 201) {
+                throw new Error('Failed!');
+            }
+
             return response.json();
         })
         .then(data => {
             console.log(data);
-        });
+        })
+        .catch(error => console.error(error));
     }
 
     modalCancelHandler = () => {
         this.setState({ creating: false });
+    }
+
+    fetchEvets = () => {
+        const requestBody = {
+            query: `
+                query {
+                    events {
+                        _id
+                        title
+                    }
+                }
+            `
+        };
+
+        fetch('http://localhost:3001/api', {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            mode:'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.status !== 200 &&
+                response.status !== 201) {
+                throw new Error('Failed!');
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => console.error(error));
     }
 
     render() {
@@ -94,11 +141,11 @@ class EventsPage extends Component {
                             <form>
                                 <div className="form-group">
                                     <label htmlFor="usr">Title:</label>
-                                    <input type="text" className="form-control" id="title" ref={this.titleElRef} />
+                                    <input type="text" className="form-control" id="title" ref={this.titleElRef} defaultValue='For test' />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Price:</label>
-                                    <input type="number" className="form-control" id="price" ref={this.priceElRef} />
+                                    <input type="number" className="form-control" id="price" ref={this.priceElRef} defaultValue='9.99' />
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Date:</label>
@@ -106,18 +153,23 @@ class EventsPage extends Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="usr">Description:</label>
-                                    <textarea className="form-control" rows="5" id="description" ref={this.descriptionElRef}></textarea>
+                                    <textarea className="form-control" rows="5" id="description" ref={this.descriptionElRef} defaultValue='Cool story'></textarea>
                                 </div>
                             </form>
                         </Modal>
                     )}
 
-                    <div>
+                    {this.context.token && <div>
                         <button
                             type="button"
                             className="btn btn-primary"
                             onClick={this.startCreatingEventHandler}>Add event</button>
-                    </div>
+                    </div>}
+
+                    <h2>Events list</h2>
+                    <ul className="list-group">
+                        <li className='list-group-item'>test</li>
+                    </ul>
                 </div>
             </React.Fragment>
         )
