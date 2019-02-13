@@ -30,19 +30,17 @@ class EventsPage extends Component {
     modalConfirmHandler = () => {
         this.setState({ creating: false });
 
-        const event = {
-            title: this.titleElRef.current.value,
-            price: +this.priceElRef.current.value,
-            date: this.dateElRef.current.value,
-            description: this.descriptionElRef.current.value,
-        }
+        const title = this.titleElRef.current.value;
+        const price = +this.priceElRef.current.value;
+        const date = this.dateElRef.current.value;
+        const description = this.descriptionElRef.current.value;
 
         // TODO: simple validation
-        if (event.title.trim().length === 0 ||
-            event.price <= 0 ||
-            event.date.trim().length === 0 ||
-            event.description.trim().length === 0) {
-            console.log('validation failed', event)
+        if (title.trim().length === 0 ||
+            price <= 0 ||
+            date.trim().length === 0 ||
+            description.trim().length === 0) {
+            console.log('validation failed');
             return;
         }
 
@@ -52,15 +50,18 @@ class EventsPage extends Component {
             query: `
                 mutation {
                     createEvent(eventInput: {
-                        title: "${event.title}", 
-                        description: "${event.description}", 
-                        price: "${event.price}", 
-                        date: "${event.date}"}) {
+                        title: "${title}", 
+                        description: "${description}", 
+                        price: ${price}, 
+                        date: "${date}"}) {
                             _id
                             title
                             description
                             price
                             date
+                            creator {
+                                email
+                            }
                     }
                 }
             `
@@ -77,7 +78,7 @@ class EventsPage extends Component {
         .then(response => {
             if (response.status !== 200 &&
                 response.status !== 201) {
-                throw new Error('Failed!');
+                throw new Error('Create event failed!');
             }
 
             return response.json();
@@ -85,7 +86,9 @@ class EventsPage extends Component {
         .then(data => {
             console.log(data);
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+            console.log(`[ERROR] Create event failed!`);
+        });
     }
 
     modalCancelHandler = () => {
@@ -159,7 +162,7 @@ class EventsPage extends Component {
                         </Modal>
                     )}
 
-                    {this.context.token && <div>
+                    {this.context.token && <div className='mb-4'>
                         <button
                             type="button"
                             className="btn btn-primary"

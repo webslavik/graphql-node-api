@@ -25,7 +25,7 @@ const isAuth = (request, response, next) => {
         }
 
         request.isAuth = true;
-        request.userId = token.userId;
+        request.userId = decodedToken.userId;
         next();
     } catch (error) {
         request.isAuth = false;
