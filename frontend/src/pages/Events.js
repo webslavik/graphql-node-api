@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Modal from './../components/Modal/Modal';
+import EventList from '../components/Events/EventList';
 import AuthContext from './../context/auth-context';
 
 
@@ -140,14 +141,6 @@ class EventsPage extends Component {
     }
 
     render() {
-        const eventsList = this.state.events.map(event => {
-            return (
-                <li key={event._id} className='list-group-item'>
-                    {event.title}
-                </li>
-            );
-        });
-
         return (
             <React.Fragment>
                 <div className='event-page pt-5'>
@@ -189,9 +182,7 @@ class EventsPage extends Component {
                     </div>}
 
                     <h2>Events list</h2>
-                    <ul className="list-group">
-                        {eventsList}
-                    </ul>
+                    <EventList events={this.state.events} />
                 </div>
             </React.Fragment>
         )
