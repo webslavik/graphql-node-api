@@ -182,7 +182,9 @@ class EventsPage extends Component {
                     </div>}
 
                     <h2>Events list</h2>
-                    <EventList events={this.state.events} />
+                    <EventList 
+                        events={this.state.events}
+                        userId={this.context.userId} />
                 </div>
             </React.Fragment>
         )

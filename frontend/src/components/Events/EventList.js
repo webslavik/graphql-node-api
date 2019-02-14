@@ -5,7 +5,13 @@ import EventItem from './EventItem';
 const eventList = props => {
     const events = props.events.map(event => {
         return (
-            <EventItem key={event._id} event={event}  />
+            <EventItem 
+                key={event._id} 
+                id={event._id} 
+                title={event.title}
+                price={event.price}
+                userId={event.userId}
+                creator={props.userId === event.creator._id} />
         );
     });
 
