@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Modal from './../components/Modal/Modal';
 import EventList from '../components/Events/EventList';
+import Spinner from '../components/Spinner/Spinner';
 import AuthContext from './../context/auth-context';
 
 
@@ -9,6 +10,7 @@ class EventsPage extends Component {
     state = {
         creating: false,
         events: [],
+        isLoading: false,
     }
 
     static contextType = AuthContext;
@@ -61,9 +63,6 @@ class EventsPage extends Component {
                             description
                             price
                             date
-                            creator {
-                                email
-                            }
                     }
                 }
             `
@@ -85,8 +84,27 @@ class EventsPage extends Component {
 
             return response.json();
         })
-        .then(data => {
-            this.fetchEvets();
+        .then(resData => {
+            const { data } = resData;
+
+            this.setState(prevState => {
+                const updatedEvents = [...prevState.events];
+
+                updatedEvents.push({
+                    _id: data.createEvent._id,
+                    title: data.createEvent.title,
+                    description: data.createEvent.description,
+                    price: data.createEvent.price,
+                    date: data.createEvent.date,
+                    creator: {
+                        _id: this.context.userId,
+                    },
+                });
+
+                return {
+                    events: updatedEvents,
+                };
+            });
         })
         .catch(error => {
             console.log(`[ERROR] Create event failed!`);
@@ -98,6 +116,8 @@ class EventsPage extends Component {
     }
 
     fetchEvets = () => {
+        this.setState({ isLoading: true });
+
         const requestBody = {
             query: `
                 query {
@@ -134,17 +154,19 @@ class EventsPage extends Component {
         .then(resData => {
             const events = resData.data.events;
             this.setState({ events });
+
+            this.setState({ isLoading: false });
         })
         .catch(error => {
             console.log(`[ERROR] Fetch events failed!`);
+            this.setState({ isLoading: false });
         });
     }
 
     render() {
         return (
             <React.Fragment>
-                <div className='event-page pt-5'>
-                    <h1>{this.fuck}</h1>
+                <div className='event-page pt-5 pb-5'>
                     {this.state.creating && (
                         <Modal
                             title='Create event'
@@ -181,10 +203,17 @@ class EventsPage extends Component {
                             onClick={this.startCreatingEventHandler}>Add event</button>
                     </div>}
 
-                    <h2>Events list</h2>
-                    <EventList 
-                        events={this.state.events}
-                        userId={this.context.userId} />
+                    {this.state.isLoading ? 
+                        <Spinner /> :
+
+                        (<div>
+                            <h2>Events</h2>
+                            <EventList 
+                            events={this.state.events}
+                            userId={this.context.userId} />
+                        </div>)
+                    }
+
                 </div>
             </React.Fragment>
         )

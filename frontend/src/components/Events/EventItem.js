@@ -6,7 +6,7 @@ const eventItem = props => {
         <li className='list-group-item d-flex justify-content-between align-items-center'>
             <div className='d-flex'>
                 <div className='font-weight-bold mr-3'>{props.title}</div>
-                <div>{props.price}</div>
+                <div>${props.price.toFixed(2)}</div>
             </div>
             <div>
                {props.creator ? 
