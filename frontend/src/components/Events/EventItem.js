@@ -11,8 +11,11 @@ const eventItem = props => {
             <div>
                {props.creator ? 
                     <span className="badge badge-primary">Your event</span> :
-                    <button type="button" className="btn btn-primary btn-sm">
-                        View
+                    <button 
+                        type="button" 
+                        className="btn btn-primary btn-sm"
+                        onClick={props.onDetails.bind(this, props.id)}>
+                        View Details
                     </button>
                 }
             </div>

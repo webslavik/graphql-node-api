@@ -30,7 +30,7 @@ const modal = props => (
                             type="button" 
                             className="btn btn-primary mr-3"
                             onClick={props.onConfirm}>
-                            Confirm
+                            {props.confirmName}
                         </button>
                     )}
                 </div>

@@ -11,6 +11,7 @@ class EventsPage extends Component {
         creating: false,
         events: [],
         isLoading: false,
+        seletedEvent: null,
     }
 
     static contextType = AuthContext;
@@ -111,8 +112,17 @@ class EventsPage extends Component {
         });
     }
 
+    viewDetailsHandler = eventId => {
+        const selectedEvent = this.state.events.find(event => event._id === eventId);
+        this.setState({ selectedEvent });
+    }
+
+    bookEventHandler = () => {
+        console.log('book event')
+    }
+
     modalCancelHandler = () => {
-        this.setState({ creating: false });
+        this.setState({ creating: false, selectedEvent: null });
     }
 
     fetchEvets = () => {
@@ -167,9 +177,12 @@ class EventsPage extends Component {
         return (
             <React.Fragment>
                 <div className='event-page pt-5 pb-5'>
+
+                    {/* Creating */}
                     {this.state.creating && (
                         <Modal
                             title='Create event'
+                            confirmName='Create'
                             canCancel
                             canConfirm
                             onCancel={this.modalCancelHandler}
@@ -196,6 +209,30 @@ class EventsPage extends Component {
                         </Modal>
                     )}
 
+                    {/* Show event details */}
+                    {this.state.selectedEvent && (
+                        <Modal 
+                            title='Event details'
+                            confirmName='Book'
+                            canCancel
+                            canConfirm
+                            onCancel={this.modalCancelHandler}
+                            onConfirm={this.bookEventHandler}>
+                            <h5>
+                                {this.state.selectedEvent.title}
+                            </h5>
+                            <div>
+                                Price: ${this.state.selectedEvent.price}
+                            </div>
+                            <div>
+                                Date: {new Date(this.state.selectedEvent.date).toLocaleDateString()}
+                            </div>
+                            <div className='mb-4'>
+                                {this.state.selectedEvent.description}
+                            </div>
+                        </Modal>
+                    )}
+
                     {this.context.token && <div className='mb-4'>
                         <button
                             type="button"
@@ -210,7 +247,8 @@ class EventsPage extends Component {
                             <h2>Events</h2>
                             <EventList 
                             events={this.state.events}
-                            userId={this.context.userId} />
+                            userId={this.context.userId}
+                            onViewDetails={this.viewDetailsHandler} />
                         </div>)
                     }
 
