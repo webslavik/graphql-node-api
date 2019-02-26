@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
 import Spinner from '../components/Spinner/Spinner';
+import BookingsList from './../components/Bookings/BookingList';
+
 import AuthContext from './../context/auth-context';
 
 
@@ -14,6 +16,55 @@ class BookingsPage extends Component {
 
     componentDidMount() {
         this.fetchBookingList();
+    }
+
+    deleteBookingHandler = bookingId => {
+        this.setState({ isLoading: true });
+
+        const requestBody = {
+            query: `
+                mutation {
+                    cancelBooking(bookingId: "${bookingId}") {
+                        _id
+                        title
+                    }
+                }
+            `
+        };
+
+
+        fetch('http://localhost:3001/api', {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.context.token}`,
+            }
+        })
+            .then(response => {
+                if (response.status !== 200 &&
+                    response.status !== 201) {
+                    throw new Error('Failed!');
+                }
+
+                return response.json();
+            })
+            .then(resData => {
+                this.setState(prevState => {
+                    const updatedBookings = prevState.bookings.filter(booking => {
+                        return booking._id !== bookingId;
+                    })
+
+                    return { bookings: updatedBookings };
+                });
+
+                this.setState({ isLoading: false });
+            })
+            .catch(error => {
+                console.log(`[ERROR] Fetch events failed!`);
+                this.setState({ isLoading: false });
+            });
+
     }
 
     fetchBookingList() {
@@ -69,14 +120,9 @@ class BookingsPage extends Component {
 
                 {this.state.isLoading ?
                     <Spinner /> :
-
-                    (<ul className="list-group">
-                        {this.state.bookings.map(booking =>
-                            <li className='list-group-item' key={booking._id}>
-                                {booking.event.title} - {new Date(booking.createdAt).toLocaleDateString()}
-                            </li>
-                        )}
-                    </ul>)
+                    <BookingsList 
+                        bookings={this.state.bookings} 
+                        onDelete={this.deleteBookingHandler} />
                 }
             </div>
         );

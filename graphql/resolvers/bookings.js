@@ -14,7 +14,7 @@ module.exports = {
         }
 
         try {
-            const docs = await Booking.find();
+            const docs = await Booking.find({ user: request.userId });
 
             const bookings = docs.map(doc => {
                 const { _doc: booking } = doc;
