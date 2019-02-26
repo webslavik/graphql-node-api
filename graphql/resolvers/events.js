@@ -1,4 +1,4 @@
-const Event = require('./../../model/event');
+const Events = require('./../../model/event');
 const User = require('./../../model/user');
 
 const { transformEvent } = require('./helpers');
@@ -7,7 +7,7 @@ const { transformEvent } = require('./helpers');
 module.exports = {
     async events() {
         try {
-            const docs = await Event.find();
+            const docs = await Events.find();
 
             const events = docs.map(doc => {
                 const { _doc: event } = doc;

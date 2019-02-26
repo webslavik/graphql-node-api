@@ -18,7 +18,7 @@ module.exports = {
 
             const bookings = docs.map(doc => {
                 const { _doc: booking } = doc;
-
+                
                 return transformBooking(booking);
             });
             
