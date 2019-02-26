@@ -11,7 +11,7 @@ class EventsPage extends Component {
         creating: false,
         events: [],
         isLoading: false,
-        seletedEvent: null,
+        selectedEvent: null,
     }
 
     static contextType = AuthContext;
@@ -118,7 +118,41 @@ class EventsPage extends Component {
     }
 
     bookEventHandler = () => {
-        console.log('book event')
+        const requestBody = {
+            query: `
+                mutation {
+                    bookEvent(eventId: "${this.state.selectedEvent._id}") {
+                        _id
+                        createdAt
+                        updatedAt
+                    }
+                }
+            `
+        }
+
+        fetch('http://localhost:3001/api', {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.context.token}`,
+            }
+        })
+        .then(response => {
+            if (response.status !== 200 &&
+                response.status !== 201) {
+                throw new Error('Create event failed!');
+            }
+
+            return response.json();
+        })
+        .then(resData => {
+            const { data } = resData;
+            console.log(data)
+        })
+        .catch(error => {
+            console.log(`[ERROR] Create event failed!`);
+        });
     }
 
     modalCancelHandler = () => {
@@ -222,12 +256,15 @@ class EventsPage extends Component {
                                 {this.state.selectedEvent.title}
                             </h5>
                             <div>
-                                Price: ${this.state.selectedEvent.price}
+                                <span className='font-weight-bold'>Price: </span> 
+                                ${this.state.selectedEvent.price}
                             </div>
                             <div>
-                                Date: {new Date(this.state.selectedEvent.date).toLocaleDateString()}
+                                <span className='font-weight-bold'>Date: </span> 
+                                {new Date(this.state.selectedEvent.date).toLocaleDateString()}
                             </div>
                             <div className='mb-4'>
+                                <span className='font-weight-bold'>Description: </span>
                                 {this.state.selectedEvent.description}
                             </div>
                         </Modal>
