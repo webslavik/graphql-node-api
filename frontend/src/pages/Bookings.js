@@ -32,7 +32,6 @@ class BookingsPage extends Component {
             `
         };
 
-
         fetch('http://localhost:3001/api', {
             method: 'POST',
             body: JSON.stringify(requestBody),
