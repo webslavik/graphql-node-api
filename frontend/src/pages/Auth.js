@@ -107,7 +107,7 @@ class AuthPage extends Component {
                         <form onSubmit={this.submitHandler}>
                             <div className="form-group">
                                 <label htmlFor="email">Email address:</label>
-                                <input type="text" className="form-control" id="email" ref={this.emailEl} defaultValue='slavik.sukhanov@gmail.com' />
+                                <input type="text" className="form-control" id="email" ref={this.emailEl} defaultValue='slavik.sukhanov+1@gmail.com' />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="pwd">Password:</label>

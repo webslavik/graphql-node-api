@@ -7,7 +7,7 @@ const { dateToString } = require('./../../helpers');
 
 
 const eventLoader = new DataLoader((eventIds) => {
-    return singleEvent(eventIds);
+    return multipleEvents(eventIds);
 });
 
 const userLoader = new DataLoader((userIds) => {
@@ -51,7 +51,6 @@ const multipleEvents = async (eventsIdArray) => {
 const singleEvent = async (eventId) => {
     try {
         const event = await eventLoader.load(eventId.toString());
-        
         return event;
     } catch (error) {
         throw error
@@ -72,7 +71,7 @@ const transformBooking = booking => {
     return {
         ...booking,
         _id: booking._id.toString(),
-        event: singleEvent(booking.event),
+        event: singleEvent.bind(this, booking.event._id),
         user: findEventCreator(booking.user),
         createdAt: dateToString(booking.createdAt),
         updatedAt: dateToString(booking.updatedAt),
