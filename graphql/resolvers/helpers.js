@@ -16,12 +16,16 @@ const userLoader = new DataLoader((userIds) => {
 
 const findEventCreator = async (userId) => {
     try {
-        const { _doc: user } = await userLoader.load(userId.toString()); 
+        const { _doc: user } = await userLoader.load(userId.toString());
+
+        const transformEvents = user.events.map(event => {
+            return event.toString();
+        });
 
         return {
             ...user,
             _id: user._id.toString(),
-            events: eventLoader.loadMany.bind(this, user.events),
+            events: () => eventLoader.loadMany(transformEvents),
         }
     } catch (error) {
         throw error;
@@ -30,19 +34,16 @@ const findEventCreator = async (userId) => {
 
 const multipleEvents = async (eventsIdArray) => {
     try {
-        const docs = await Event.find({ 
+        const events = await Event.find({ 
             _id: {
                 $in: eventsIdArray,
             } 
         });
 
-        const events = docs.map(doc => {
+        return events.map(doc => {
             const { _doc: event } = doc;
-
             return transformEvent(event);
         });
-
-        return events;
     } catch (error) {
         throw error;
     }
