@@ -66,7 +66,7 @@ class EventsPage extends Component {
                             date
                     }
                 }
-            `
+             `
         };
 
         fetch('http://localhost:3001/api', {

@@ -38,27 +38,35 @@ class AuthPage extends Component {
 
         let requestBody = {
             query: `
-                query {
-                    login(email: "${email}", password: "${password}") {
+                query Login($email: String!, $password: String!) {
+                    login(email: $email, password: $password) {
                         userId
                         token
                         tokenExpiration
                     }
                 }
-            `
+            `,
+            variables: {
+                email,
+                password,
+            },
         };
 
         if (!this.state.isLogin) {
             requestBody = {
                 query: `
-                    mutation {
-                        createUser(userInput: {email: "${email}", password: "${password}"}) {
+                    mutation CreateUser($email: String!, $password: String!) {
+                        createUser(userInput: { email: $email, password: $password }) {
                             _id
                             email
                             password
                         }
                     }
-                `
+                `,
+                variables: {
+                    email,
+                    password,
+                },
             };
         }
 
@@ -88,7 +96,11 @@ class AuthPage extends Component {
                 return;
             }
 
-            console.log('Sign up:', respData);
+            this.setState(prevState => {
+                return {
+                    isLogin: !prevState.isLogin,
+                }
+            });
         })
         .catch(error => {
             console.log(`[ERROR] Auth failed!`);
