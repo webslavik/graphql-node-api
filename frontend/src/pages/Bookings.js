@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import Spinner from '../components/Spinner/Spinner';
 import BookingsList from './../components/Bookings/BookingList';
+import BookingsChart from './../components/Bookings/BookingChart';
+import BookingsControls from './../components/Bookings/BookingControls';
 
 import AuthContext from './../context/auth-context';
 
@@ -10,6 +12,7 @@ class BookingsPage extends Component {
     state = {
         bookings: [],
         isLoading: false,
+        selectedTab: 'list',
     }
 
     static contextType = AuthContext;
@@ -78,9 +81,10 @@ class BookingsPage extends Component {
                     bookings {
                         _id
                         createdAt
-                        updatedAt
+                        updatedAt,
                         event {
                             title
+                            price
                         }
                     }
                 }
@@ -115,17 +119,37 @@ class BookingsPage extends Component {
             });
     }
 
+    changeSelectedTabHandler = tabType => {
+        if (tabType === 'list') {
+            this.setState({ selectedTab: 'list' });
+        } else {
+            this.setState({ selectedTab: 'chart' });
+        }
+    }
+
     render() {
+        let content = <Spinner />;
+
+        if (!this.state.isLoading) {
+            content = (
+                <React.Fragment>
+                    <BookingsControls 
+                        selectedTab={this.state.selectedTab}
+                        onChangeTab={this.changeSelectedTabHandler} />
+
+                    {this.state.selectedTab === 'list' ?
+                        <BookingsList
+                            bookings={this.state.bookings} 
+                            onDelete={this.deleteBookingHandler} /> :
+                        <BookingsChart bookings={this.state.bookings} />
+                    }
+                </React.Fragment>
+            );
+        }
+
         return (
             <div className='booking-page pt-5 pb-5'>
-                <h1 className='mb-3'>Bookings list</h1>
-
-                {this.state.isLoading ?
-                    <Spinner /> :
-                    <BookingsList 
-                        bookings={this.state.bookings} 
-                        onDelete={this.deleteBookingHandler} />
-                }
+                {content}
             </div>
         );
     }
