@@ -53,20 +53,25 @@ class EventsPage extends Component {
 
         const requestBody = {
             query: `
-                mutation {
+                mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
                     createEvent(eventInput: {
-                        title: "${title}", 
-                        description: "${description}", 
-                        price: ${price}, 
-                        date: "${date}"}) {
+                        title: $title, 
+                        description: $description, 
+                        price: $price, 
+                        date: $date}) {
                             _id
                             title
                             description
                             price
                             date
                     }
-                }
-             `
+                }`,
+            variables: {
+                title,
+                description,
+                price,
+                date,
+            }
         };
 
         fetch('http://localhost:3001/api', {
@@ -120,15 +125,17 @@ class EventsPage extends Component {
     bookEventHandler = () => {
         const requestBody = {
             query: `
-                mutation {
-                    bookEvent(eventId: "${this.state.selectedEvent._id}") {
+                mutation BookEvent($id: ID!) {
+                    bookEvent(eventId: $id) {
                         _id
                         createdAt
                         updatedAt
                     }
-                }
-            `
-        }
+                }`,
+            variables: {
+                id: this.state.selectedEvent._id,
+            },
+        };
 
         fetch('http://localhost:3001/api', {
             method: 'POST',

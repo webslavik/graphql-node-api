@@ -28,7 +28,7 @@ module.exports = {
         const userId = request.userId;
 
         try {
-            const { _doc: event } = await Event.create({
+            const { _doc: event } = await Events.create({
                 title: data.eventInput.title,
                 description: data.eventInput.description,
                 price: +data.eventInput.price,
@@ -38,7 +38,7 @@ module.exports = {
 
             await User.findByIdAndUpdate(userId, {
                 $push: {
-                    events: event,
+                    events: event._id,
                 }
             });
 
